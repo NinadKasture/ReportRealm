@@ -8,10 +8,25 @@
     }
 
     async function fetchNews(query) {
-        const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
-        const data = await res.json();
-        bindData(data.articles);
+        try {
+            const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const data = await res.json();
+            console.log('API Response:', data); // Log the response
+            if (data && Array.isArray(data.articles)) {
+                bindData(data.articles);
+            } else {
+                console.error('Invalid response structure:', data);
+                // Optionally, provide feedback to the user
+                alert('Unable to fetch news. Please try again later.');
+            }
+        } catch (error) {
+            console.error('Error fetching news:', error);
+            // Optionally, provide feedback to the user
+            alert('An error occurred. Please check the console for details.');
+        }
     }
+    
 
     function bindData(articles) {
         const cardsContainer = document.getElementById("cards-container");
